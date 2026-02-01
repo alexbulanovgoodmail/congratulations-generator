@@ -12,16 +12,26 @@ function App() {
 	const [language, setLanguage] = useState<LanguageType>(LANGUAGES[0])
 	const [congratulation, setCongratulation] = useState<string>("")
 
+	const [loading, setLoading] = useState<boolean>(false)
+	const [error, setError] = useState<string | null>(null)
+
 	const handleGenerate = async (): Promise<void> => {
-		if (!name.trim() || !age.trim()) {
+		if (!name.trim()) {
+			setError("Пожалуйста, введите имя.")
 			return
 		}
+
+		setError(null)
+		setLoading(true)
+		setCongratulation("")
 
 		try {
 			const result = await generateCongratulation(occasion, name, tone, language, age, interests)
 			setCongratulation(result)
-		} catch (error) {
-			// Handle error appropriately (e.g., show a notification to the user)
+		} catch (error: any) {
+			setError(error.message || "Ошибка при генерации поздравления.")
+		} finally {
+			setLoading(false)
 		}
 	}
 
@@ -35,6 +45,7 @@ function App() {
 			<h3>{interests}</h3>
 			<h3>{tone}</h3>
 			<h3>{language}</h3>
+			<h3>{error}</h3>
 
 			<h2>Сгенерированное поздравление:</h2>
 			<p>{congratulation}</p>
@@ -80,7 +91,9 @@ function App() {
 					</select>
 
 					<br />
-					<button onClick={handleGenerate}>Сгенерировать</button>
+					<button disabled={loading} onClick={handleGenerate}>
+						Сгенерировать
+					</button>
 				</div>
 			</main>
 		</div>
