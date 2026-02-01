@@ -26,6 +26,7 @@ export default defineConfig([
 			react
 		},
 		rules: {
+			"@typescript-eslint/no-explicit-any": "warn",
 			"prettier/prettier": [
 				"error",
 				{
