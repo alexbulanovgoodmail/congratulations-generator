@@ -2,6 +2,7 @@ import { LANGUAGES } from "./constants"
 import { OccasionType, ToneType, type LanguageType } from "./types"
 import { useState } from "react"
 import { generateCongratulation } from "./services/geminiService"
+import { Header } from "./components/Header"
 
 function App() {
 	const [occasion, setOccasion] = useState<OccasionType>(OccasionType.DAY_BIRTHDAY)
@@ -37,7 +38,7 @@ function App() {
 
 	return (
 		<div className="min-h-screen bg-[#faf5ff]">
-			<header>Генератор поздравлений</header>
+			<Header />
 
 			<h3>{occasion}</h3>
 			<h3>{name}</h3>
