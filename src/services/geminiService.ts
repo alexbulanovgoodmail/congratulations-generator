@@ -50,8 +50,6 @@ export const generateCongratulation = async (
 			}
 		})
 
-		console.log("Gemini response:", response)
-
 		if (response.text) {
 			return response.text
 		}
@@ -59,5 +57,44 @@ export const generateCongratulation = async (
 	} catch (error) {
 		console.error("Error generating congratulation:", error)
 		throw new Error("Ошибка при генерации поздравления.")
+	}
+}
+
+export const generateGreetingImage = async (
+	occasion: OccasionType,
+	tone: ToneType,
+	interests?: string
+): Promise<string | null> => {
+	try {
+		const prompt = `
+      Высококачественная цифровая иллюстрация для поздравительной открытки.
+      Повод: ${occasion}.
+      Настроение/Тон: ${tone}.
+      ${interests ? `Темы/Интересы: ${interests}` : ""}.
+      Стиль: Яркий, художественный, высокое разрешение, эстетически привлекательный.
+      Без текста на изображении.
+    `
+
+		const response = await ai.models.generateContent({
+			model: "gemini-2.5-flash-image", // Платная модель возможно потребуется сменить на доступную
+			contents: prompt,
+			config: {
+				imageConfig: {
+					aspectRatio: "4:3"
+				}
+			}
+		})
+
+		for (const part of response.candidates?.[0]?.content?.parts || []) {
+			if (part.inlineData) {
+				const base64EncodeString = part.inlineData.data
+				return `data:image/png;base64,${base64EncodeString}`
+			}
+		}
+
+		return null
+	} catch {
+		console.error("Ошибка при генерации изображения.")
+		return null
 	}
 }
