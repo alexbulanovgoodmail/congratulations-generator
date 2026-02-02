@@ -2,6 +2,7 @@ import { LANGUAGES } from "../constants"
 import type { LanguageType, ToneType } from "../types"
 import { Globe, ImageIcon } from "lucide-react"
 import type { FC, Dispatch, SetStateAction } from "react"
+import { ToneSelector } from "./ToneSelector"
 
 interface IExtraDetailsSectionProps {
 	error: string | null
@@ -17,8 +18,8 @@ export const ExtraDetailsSection: FC<IExtraDetailsSectionProps> = ({
 	error,
 	language,
 	setLanguage,
-	// selectedTone,
-	// setTone,
+	selectedTone,
+	setTone,
 	isImageEnabled,
 	setIsImageEnabled
 }) => {
@@ -28,6 +29,8 @@ export const ExtraDetailsSection: FC<IExtraDetailsSectionProps> = ({
 				<span className="flex h-6 w-6 items-center justify-center rounded-full bg-gray-900 text-xs text-white">3</span>
 				Настройки
 			</h3>
+
+			<ToneSelector selectedTone={selectedTone} setTone={setTone} />
 
 			<div className="mt-4 grid grid-cols-1 gap-1 sm:grid-cols-2 sm:gap-4">
 				<div className="group relative">
