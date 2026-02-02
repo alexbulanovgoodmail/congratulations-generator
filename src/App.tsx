@@ -1,8 +1,15 @@
 import { LANGUAGES } from "./constants"
 import { OccasionType, ToneType, type LanguageType } from "./types"
 import { useState } from "react"
+import { Cake, Snowflake, Sparkles } from "lucide-react"
 import { generateCongratulation } from "./services/geminiService"
 import { Header } from "./components/Header"
+import { AppTitle } from "./components/AppTitle"
+import { OccasionButton } from "./components/OccasionButton"
+import { UserDetailsSection } from "./components/UserDetailsSection"
+import { ExtraDetailsSection } from "./components/ExtraDetailsSection"
+import { GenerateButton } from "./components/GenerateButton"
+import { ResultSection } from "./components/ResultSection"
 
 function App() {
 	const [occasion, setOccasion] = useState<OccasionType>(OccasionType.DAY_BIRTHDAY)
@@ -12,6 +19,7 @@ function App() {
 	const [tone, setTone] = useState<ToneType>(ToneType.FRIENDLY)
 	const [language, setLanguage] = useState<LanguageType>(LANGUAGES[0])
 	const [congratulation, setCongratulation] = useState<string>("")
+	const [isImageEnabled, setIsImageEnabled] = useState<boolean>(false)
 
 	const [loading, setLoading] = useState<boolean>(false)
 	const [error, setError] = useState<string | null>(null)
@@ -40,61 +48,69 @@ function App() {
 		<div className="min-h-screen bg-[#faf5ff]">
 			<Header />
 
-			<h3>{occasion}</h3>
-			<h3>{name}</h3>
-			<h3>{age}</h3>
-			<h3>{interests}</h3>
-			<h3>{tone}</h3>
-			<h3>{language}</h3>
-			<h3>{error}</h3>
-
-			<h2>Сгенерированное поздравление:</h2>
-			<p>{congratulation}</p>
-
 			<main className="sm container mx-auto px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
 				<div className="mx-auto max-w-7xl">
-					<button onClick={() => setOccasion(OccasionType.DAY_BIRTHDAY)}>День Рождения</button>
-					<button onClick={() => setOccasion(OccasionType.NEW_YEAR)}>Новый Год</button>
+					<AppTitle />
 
-					<br />
-					<input type="text" value={name} placeholder="Имя" onChange={e => setName(e.target.value)} />
+					<div className="grid grid-cols-1 gap-8 lg:grid-cols-12 lg:gap-12">
+						<div className="space-y-8 sm:space-y-10 lg:col-span-5">
+							<section className="space-y-4">
+								<div className="flex items-center justify-between">
+									<h3 className="flex items-center gap-2 text-lg font-bold text-gray-900">
+										<span className="flex h-6 w-6 items-center justify-center rounded-full bg-gray-900 text-xs text-white">
+											1
+										</span>
+										Выберите праздник
+									</h3>
+								</div>
 
-					<br />
-					<input type="text" value={age} placeholder="Возраст" onChange={e => setAge(e.target.value)} />
+								<div className="grid grid-cols-2 gap-4">
+									<OccasionButton
+										label={OccasionType.DAY_BIRTHDAY}
+										icon={Cake}
+										selected={occasion === OccasionType.DAY_BIRTHDAY}
+										onClick={() => setOccasion(OccasionType.DAY_BIRTHDAY)}
+									/>
+									<OccasionButton
+										label={OccasionType.NEW_YEAR}
+										icon={Snowflake}
+										selected={occasion === OccasionType.NEW_YEAR}
+										onClick={() => setOccasion(OccasionType.NEW_YEAR)}
+									/>
+								</div>
+							</section>
 
-					<br />
-					<textarea
-						value={interests}
-						rows={2}
-						placeholder="Путешествия, кодинг, котики..."
-						onChange={e => setInterests(e.target.value)}
-					></textarea>
+							<UserDetailsSection
+								name={name}
+								setName={setName}
+								age={age}
+								setAge={setAge}
+								error={error}
+								setError={setError}
+								interests={interests}
+								setInterests={setInterests}
+							/>
 
-					<br />
-					{Object.values(ToneType).map(tone => (
-						<button key={tone} onClick={() => setTone(tone)}>
-							{tone}
-						</button>
-					))}
+							<ExtraDetailsSection
+								error={error}
+								language={language}
+								selectedTone={tone}
+								isImageEnabled={isImageEnabled}
+								setTone={setTone}
+								setLanguage={setLanguage}
+								setIsImageEnabled={setIsImageEnabled}
+							/>
 
-					<br />
-					<select
-						name="language"
-						id="language"
-						value={language}
-						onChange={e => setLanguage(e.target.value as LanguageType)}
-					>
-						{LANGUAGES.map(language => (
-							<option key={language} value={language}>
-								{language}
-							</option>
-						))}
-					</select>
+							<GenerateButton isLoading={loading} onClick={handleGenerate}>
+								<Sparkles className={`h-5 w-5 ${loading ? "animate-spin" : "group-hover:animate-pulse"}`} />
+								{loading ? "Сочиняем..." : "Сгенерировать"}
+							</GenerateButton>
+						</div>
 
-					<br />
-					<button disabled={loading} onClick={handleGenerate}>
-						Сгенерировать
-					</button>
+						<div className="h-full lg:col-span-7">
+							<ResultSection content={congratulation} isLoading={loading} />
+						</div>
+					</div>
 				</div>
 			</main>
 		</div>
